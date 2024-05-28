@@ -15,6 +15,23 @@ function ChatPage({ JWT, gameId }) {
     const [queries, setQueries] = useState([]);
     const [canSubmit, setCanSubmit] = useState(false);
 
+//    useEffect(() => {
+//        axios.get(`${process.env.REACT_APP_API_URL}/game/progress`,
+//            { gameId: gameId },
+//            {
+//                headers: {
+//                    'Authorization': `Bearer ${JWT}`
+//                }
+//            }).then((response) => {
+//            setGameInfo(prevGameInfo => ({
+//                ...prevGameInfo,
+//                progress: response.data.progress
+//            }));
+//        }).catch((error) => {
+//            console.error('Failed to fetch game progress:', error);
+//        });
+//    }, [JWT, gameId, queries]);
+
     useEffect(() => {
         const fetchGameInfo = async () => {
             axios.get(`${process.env.REACT_APP_API_URL}/game/info`, {
@@ -25,16 +42,6 @@ function ChatPage({ JWT, gameId }) {
             }).then((response) => {
                 const gameInfo = response.data;
                 const [gameDetails, ...queries] = gameInfo;
-                axios.get(`${process.env.REACT_APP_API_URL}/game/progress`, {
-                    params: { gameId: gameId },
-                    headers: {
-                        'Authorization': `Bearer ${JWT}`
-                    }
-                }).then((response) => {
-                    gameDetails.progress = response.data.progress;
-                }).catch(() => {
-
-                });
                 setGameInfo(gameDetails);
                 setQueries(queries);
             }).catch((error) => {
@@ -64,7 +71,7 @@ function ChatPage({ JWT, gameId }) {
             return response.data;
         } catch (error) {
             console.error('Failed to fetch recent items:', error);
-            throw error; // Throw the error to handle it in the calling function if necessary
+            throw error;
         }
     };
 
@@ -83,7 +90,10 @@ function ChatPage({ JWT, gameId }) {
             const response = await fetchGptResponse();
             if (response) {
                 const updatedQuery = { query: newQueryText, queryId: response.queryId, response: response.response };
-                gameInfo.queryCount = response.queryCount;
+                setGameInfo(prevGameInfo => ({
+                    ...prevGameInfo,
+                    queryCount: response.queryCount
+                }));
                 setQueries([...queries, updatedQuery]);
             } else {
                 alert("해당 게임의 모든 기회를 소진하셨습니다.");
@@ -128,8 +138,15 @@ function ChatPage({ JWT, gameId }) {
                     </button>
                 </div>
             </div>
+            <div className="remaining-queries">
+                남은 질문 횟수: {gameInfo.queryCount}
+            </div>
         </div>
     );
 }
+
+//<div className="progress-bar">
+//    <progress value={gameInfo.progress} max="100"></progress>
+//</div>
 
 export default ChatPage;
