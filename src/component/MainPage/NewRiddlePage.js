@@ -63,8 +63,8 @@ const NewRiddlePage = ({ JWT }) => {
         const newRiddle = {
             riddleTitle: riddleTitle,
             problem: problem,
-            situationSentences: situationSentences.filter(sentence => sentence.length > 0),
-            answerSentences: answerSentences.filter(sentence => sentence.length > 0),
+            situations: situationSentences.filter(sentence => sentence.length > 0),
+            answers: answerSentences.filter(sentence => sentence.length > 0),
         };
         axios.post(`${process.env.REACT_APP_API_URL}/riddle/new`, newRiddle, {
             headers: { 'Authorization': `Bearer ${JWT}` }
