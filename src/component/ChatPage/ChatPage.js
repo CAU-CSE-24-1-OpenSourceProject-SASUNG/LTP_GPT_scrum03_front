@@ -25,6 +25,16 @@ function ChatPage({ JWT, gameId }) {
             }).then((response) => {
                 const gameInfo = response.data;
                 const [gameDetails, ...queries] = gameInfo;
+                axios.get(`${process.env.REACT_APP_API_URL}/game/progress`, {
+                    params: { gameId: gameId },
+                    headers: {
+                        'Authorization': `Bearer ${JWT}`
+                    }
+                }).then((response) => {
+                    gameDetails.progress = response.data.progress;
+                }).catch(() => {
+
+                });
                 setGameInfo(gameDetails);
                 setQueries(queries);
             }).catch((error) => {
