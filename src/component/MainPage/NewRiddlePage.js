@@ -6,35 +6,51 @@ import './NewRiddlePage.css';
 const NewRiddlePage = ({ JWT }) => {
     const [riddleTitle, setRiddleTitle] = useState('');
     const [problem, setProblem] = useState('');
-    const [situation, setSituation] = useState('');
-    const [answer, setAnswer] = useState('');
-    const [progressSentences, setProgressSentences] = useState(['', '', '']);
+    const [situationSentences, setSituationSentences] = useState(['']);
+    const [answerSentences, setAnswerSentences] = useState(['']);
     const navigate = useNavigate();
 
-    const handleAddProgressSentence = () => {
-        if (progressSentences.length < 5) {
-            setProgressSentences([...progressSentences, '']);
+    const handleAddSituationSentence = () => {
+        if (situationSentences.length < 10) {
+            setSituationSentences([...situationSentences, '']);
         }
     };
 
-    const handleRemoveProgressSentence = (index) => {
-        if (progressSentences.length > 3) {
-            setProgressSentences(progressSentences.filter((_, i) => i !== index));
+    const handleRemoveSituationSentence = (index) => {
+        if (situationSentences.length > 1) {
+            setSituationSentences(situationSentences.filter((_, i) => i !== index));
         }
     };
 
-    const handleChangeProgressSentence = (index, value) => {
-        const newProgressSentences = [...progressSentences];
-        newProgressSentences[index] = value;
-        setProgressSentences(newProgressSentences);
+    const handleChangeSituationSentence = (index, value) => {
+        const newSentences = [...situationSentences];
+        newSentences[index] = value;
+        setSituationSentences(newSentences);
+    };
+
+    const handleAddAnswerSentence = () => {
+        if (answerSentences.length < 5) {
+            setAnswerSentences([...answerSentences, '']);
+        }
+    };
+
+    const handleRemoveAnswerSentence = (index) => {
+        if (answerSentences.length > 1) {
+            setAnswerSentences(answerSentences.filter((_, i) => i !== index));
+        }
+    };
+
+    const handleChangeAnswerSentence = (index, value) => {
+        const newSentences = [...answerSentences];
+        newSentences[index] = value;
+        setAnswerSentences(newSentences);
     };
 
     const validateInputs = () => {
         if (riddleTitle.length < 1 || riddleTitle.length > 1000) return false;
         if (problem.length < 1 || problem.length > 1000) return false;
-        if (situation.length < 1 || situation.length > 1000) return false;
-        if (answer.length < 1 || answer.length > 1000) return false;
-        if (progressSentences.some(sentence => sentence.length < 1) || progressSentences.length < 1) return false;
+        if (situationSentences.some(sentence => sentence.length < 1) || situationSentences.length < 1) return false;
+        if (answerSentences.some(sentence => sentence.length < 1) || answerSentences.length < 1) return false;
         return true;
     };
 
@@ -47,16 +63,15 @@ const NewRiddlePage = ({ JWT }) => {
         const newRiddle = {
             riddleTitle: riddleTitle,
             problem: problem,
-            situation: situation,
-            answer: answer,
-            progressSentences: progressSentences.filter(sentence => sentence.length > 0),
+            situationSentences: situationSentences.filter(sentence => sentence.length > 0),
+            answerSentences: answerSentences.filter(sentence => sentence.length > 0),
         };
         axios.post(`${process.env.REACT_APP_API_URL}/riddle/new`, newRiddle, {
             headers: { 'Authorization': `Bearer ${JWT}` }
         }).then(response => {
-             navigate('/main');
+            navigate('/main');
         }).catch(error => {
-            alert("새로운 수수께끼를 만들기 위한 수수께끼 티켓이 부족합니다!");
+            alert("형식에 맞지 않거나, 새로운 수수께끼를 만들기 위한 수수께끼 티켓이 부족합니다!");
             console.error('Failed to create new riddle:', error);
         });
     };
@@ -73,31 +88,50 @@ const NewRiddlePage = ({ JWT }) => {
                     <label>Problem</label>
                     <textarea value={problem} placeholder="수수께끼의 문제 내용을 적어주세요. (Write a problem about this new riddle.)" onChange={e => setProblem(e.target.value)} />
                 </div>
-                <div className="new-input-group">
-                    <label>Situation</label>
-                    <textarea value={situation} placeholder="숨겨진 정보, 상황들을 입력해주세요. (Write a hidden situation infomations.)" onChange={e => setSituation(e.target.value)} />
-                </div>
-                <div className="new-input-group">
-                    <label>Answer</label>
-                    <textarea value={answer} placeholder="정답 상황을 구체적으로 작성해주세요. (Write the answer situation specifically.)" onChange={e => setAnswer(e.target.value)} />
-                </div>
-                <div className="new-input-group progress-sentences">
-                    <label>Progress Sentences</label>
-                    {progressSentences.map((sentence, index) => (
-                        <div key={index} className="progress-sentence">
+                <div className="new-input-group sentences-group">
+                    <label>Situation Sentences</label>
+                    {situationSentences.map((sentence, index) => (
+                        <div key={index} className="sentence">
                             <input
                                 type="text"
                                 value={sentence}
-                                placeholder={`플레이어가 이 상황을 맞추면 진행도가 ${(index + 1) / progressSentences.length * 100}%가 돼요. (If a player says this sentence, the progress will be ${(index + 1) / progressSentences.length * 100}%.)`}
-                                onChange={e => handleChangeProgressSentence(index, e.target.value)}
+                                placeholder="숨겨진 정보, 상황들을 한 문장씩 입력해주세요. (Write hidden situation information line by line.)"
+                                onChange={e => handleChangeSituationSentence(index, e.target.value)}
                             />
-                            {progressSentences.length > 3 && (
-                                <button onClick={() => handleRemoveProgressSentence(index)} className="remove-button">Remove</button>
+                            {situationSentences.length > 1 && (
+                                <button onClick={() => handleRemoveSituationSentence(index)} className="remove-button">Remove</button>
                             )}
                         </div>
                     ))}
-                    {progressSentences.length < 5 && (
-                        <button onClick={handleAddProgressSentence} className="add-button">Add Progress Sentence</button>
+                    {situationSentences.length < 10 && (
+                        <div className="add-sentence-container">
+                            <span>현재 작성된 문장의 개수: {situationSentences.length}</span>
+                            <span>입력 최대 문장 개수: 10</span>
+                            <button onClick={handleAddSituationSentence} className="add-button">Add Situation Sentence</button>
+                        </div>
+                    )}
+                </div>
+                <div className="new-input-group sentences-group">
+                    <label>Answer Sentences</label>
+                    {answerSentences.map((sentence, index) => (
+                        <div key={index} className="sentence">
+                            <input
+                                type="text"
+                                value={sentence}
+                                placeholder="정답 상황을 한 줄씩 작성해주세요. (Write the answer situation specifically line by line.)"
+                                onChange={e => handleChangeAnswerSentence(index, e.target.value)}
+                            />
+                            {answerSentences.length > 1 && (
+                                <button onClick={() => handleRemoveAnswerSentence(index)} className="remove-button">Remove</button>
+                            )}
+                        </div>
+                    ))}
+                    {answerSentences.length < 5 && (
+                        <div className="add-sentence-container">
+                            <span>현재 작성된 문장의 개수: {answerSentences.length}</span>
+                            <span>입력 최대 문장 개수: 5</span>
+                            <button onClick={handleAddAnswerSentence} className="add-button">Add Answer Sentence</button>
+                        </div>
                     )}
                 </div>
                 <button className="create-button" onClick={handleCreateRiddle}>Create New Riddle</button>
