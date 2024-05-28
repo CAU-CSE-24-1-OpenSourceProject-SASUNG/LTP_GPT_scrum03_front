@@ -7,14 +7,17 @@ import axios from "axios";
 
 function MainPage({ JWT, userInfo, setUserInfo, setGameId, riddles, setRiddles }) {
 
-
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/user/info`, {
             headers: {
                 'Authorization': `Bearer ${JWT}`
             }
         }).then((response) => {
-            setUserInfo({...userInfo, riddleTicket: response.data.riddleTicket, gameTicket: response.data.gameTicket});
+            setUserInfo({...userInfo,
+                riddleTicket: response.data.riddleTicket,
+                gameTicket: response.data.gameTicket,
+                experience: response.data.experience
+            });
         }).catch((error) => {
             console.error("Fail to fetch userinfo : ", error);
         });

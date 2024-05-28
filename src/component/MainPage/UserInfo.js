@@ -12,8 +12,8 @@ function UserInfo({ userInfo }) {
         return (exp % 100) / 100 * 100; // 레벨 진행도를 0-100%로 계산
     };
 
-    const userLevel = calculateLevel(userInfo.exp);
-    const levelProgress = calculateLevelProgress(userInfo.exp);
+    const userLevel = calculateLevel(userInfo.experience);
+    const levelProgress = calculateLevelProgress(userInfo.experience);
 
     return (
         <div className="info-group">

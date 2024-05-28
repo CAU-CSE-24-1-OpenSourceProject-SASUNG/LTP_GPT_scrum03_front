@@ -8,12 +8,12 @@ import ReactMarkdown from 'react-markdown';
 function ChatPage({ JWT, gameId }) {
     const [gameInfo, setGameInfo] = useState(
         [
-            { gameTitle: 'dummy', problem: 'dummy problem' }
+            { gameTitle: 'dummy', problem: 'dummy problem', queryCount: 30, progress: 0 }
         ]
     );
     const [query, setQuery] = useState("");
     const [queries, setQueries] = useState([]);
-    const [canSubmit, setCanSubmit] = useState(true);
+    const [canSubmit, setCanSubmit] = useState(false);
 
     useEffect(() => {
         const fetchGameInfo = async () => {
@@ -32,6 +32,7 @@ function ChatPage({ JWT, gameId }) {
             });
         };
         fetchGameInfo();
+        setCanSubmit((gameInfo.progress !== 0) && true);
     }, [JWT, gameId]);
 
     const handleInputChange = (e) => {
@@ -40,17 +41,20 @@ function ChatPage({ JWT, gameId }) {
 
     const fetchGptResponse = async () => {
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/chat`,
-                { game_id: gameId, query: query }, {
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_URL}/chat`,
+                { game_id: gameId, query: query },
+                {
                     headers: {
                         'Authorization': `Bearer ${JWT}`,
                         'Content-Type': 'application/json'
                     }
-                });
+                }
+            );
             return response.data;
         } catch (error) {
             console.error('Failed to fetch recent items:', error);
-            return null;
+            throw error; // Throw the error to handle it in the calling function if necessary
         }
     };
 
@@ -65,14 +69,19 @@ function ChatPage({ JWT, gameId }) {
         console.log(newQueryText);
         const dummyQuery = { queryId: "dummyId", query: newQueryText, response: "" };
         setQueries([...queries, dummyQuery]);
-        const response = await fetchGptResponse();
-        if (response) {
-            const updatedQuery = { query: newQueryText, queryId: response.queryId, response: response.response };
-            setQueries([...queries, updatedQuery]);
+        try {
+            const response = await fetchGptResponse();
+            if (response) {
+                const updatedQuery = { query: newQueryText, queryId: response.queryId, response: response.response };
+                gameInfo.queryCount = response.queryCount;
+                setQueries([...queries, updatedQuery]);
+            } else {
+                alert("해당 게임의 모든 기회를 소진하셨습니다.");
+            }
+        } catch (error) {
+            alert("서버 요청 중에 오류가 발생했습니다.");
         }
-        else
-            alert("해당 게임의 모든 기회를 소진하셨습니다.");
-        setCanSubmit(true);
+        setCanSubmit((gameInfo.progress !== 0) && true);
     };
 
     const handleKeyDown = (event) => {
