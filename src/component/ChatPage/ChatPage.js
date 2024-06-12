@@ -4,6 +4,7 @@ import Logo from '../../static/icon/logo.svg';
 import ChatWindow from "./ChatWindow";
 import axios from "axios";
 import ReactMarkdown from 'react-markdown';
+import {useNavigate} from "react-router-dom";
 
 function ChatPage({ JWT, gameId }) {
     const [gameInfo, setGameInfo] = useState(
@@ -14,23 +15,7 @@ function ChatPage({ JWT, gameId }) {
     const [query, setQuery] = useState("");
     const [queries, setQueries] = useState([]);
     const [canSubmit, setCanSubmit] = useState(false);
-
-//    useEffect(() => {
-//        axios.get(`${process.env.REACT_APP_API_URL}/game/progress`,
-//            { gameId: gameId },
-//            {
-//                headers: {
-//                    'Authorization': `Bearer ${JWT}`
-//                }
-//            }).then((response) => {
-//            setGameInfo(prevGameInfo => ({
-//                ...prevGameInfo,
-//                progress: response.data.progress
-//            }));
-//        }).catch((error) => {
-//            console.error('Failed to fetch game progress:', error);
-//        });
-//    }, [JWT, gameId, queries]);
+    const [clear, setClear] = useState(false);
 
     useEffect(() => {
         const fetchGameInfo = async () => {
@@ -47,9 +32,27 @@ function ChatPage({ JWT, gameId }) {
             }).catch((error) => {
                 console.error('Failed to fetch gameInfo:', error);
             });
+            axios.get(`${process.env.REACT_APP_API_URL}/game/progress`, { gameId: gameId },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${JWT}`
+                    },
+                }
+            ).then((response) => {
+                setGameInfo(prevGameInfo => ({
+                    ...prevGameInfo,
+                    progress: response.data.progress
+                }));
+            }).catch((error) => {
+                console.error('Failed to fetch game progress:', error);
+            });
         };
         fetchGameInfo();
-        setCanSubmit((gameInfo.progress !== 0) && true);
+        setClear(gameInfo.progress === 100);
+        setCanSubmit(!clear);
+        if (clear){
+            alert("이미 클리어한 게임입니다. 응답 별 피드백을 남길 수 있습니다.");
+        }
     }, [JWT, gameId]);
 
     const handleInputChange = (e) => {
@@ -117,8 +120,9 @@ function ChatPage({ JWT, gameId }) {
                 <ReactMarkdown>{gameInfo.problem}</ReactMarkdown>
             </div>
             <div className="chat-group">
-                <ChatWindow queries={queries} query={query} />
-                <div className="input-group">
+                <ChatWindow JWT={JWT} clear={clear} queries={queries} />
+                {!clear &&
+                    <div className="input-group">
                     <textarea
                         id="userQuestion"
                         className="chat-input"
@@ -128,25 +132,27 @@ function ChatPage({ JWT, gameId }) {
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                     />
-                    <button
-                        className="submit-button"
-                        type="submit"
-                        onClick={handleSubmit}
-                        disabled={!canSubmit || query.length < 1 || query.length > 200}
-                    >
-                        <img className="logo" src={Logo} alt="Logo" />
-                    </button>
-                </div>
+                        <button
+                            className="submit-button"
+                            type="submit"
+                            onClick={handleSubmit}
+                            disabled={!canSubmit || query.length < 1 || query.length > 200}
+                        >
+                            <img className="logo" src={Logo} alt="Logo" />
+                        </button>
+                    </div>
+                }
             </div>
             <div className="remaining-queries">
                 남은 질문 횟수: {gameInfo.queryCount}
+            </div>
+            <div className="progress-bar">
+                현재 진행도 : {gameInfo.progress}
+                <progress value={gameInfo.progress} max="100"> </progress>
             </div>
         </div>
     );
 }
 
-//<div className="progress-bar">
-//    <progress value={gameInfo.progress} max="100"></progress>
-//</div>
 
 export default ChatPage;

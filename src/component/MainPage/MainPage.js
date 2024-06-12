@@ -8,6 +8,7 @@ import axios from "axios";
 
 function MainPage({ JWT, userInfo, setUserInfo, setGameId, riddles, setRiddles }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+//    const [rankInfo, setRankInfo] = useState();
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/user/info`, {
@@ -23,6 +24,15 @@ function MainPage({ JWT, userInfo, setUserInfo, setGameId, riddles, setRiddles }
         }).catch((error) => {
             console.error("Fail to fetch userinfo : ", error);
         });
+//        axios.get(`${process.env.REACT_APP_API_URL}/ranking`, {
+//            headers: {
+//                'Authorization': `Bearer ${JWT}`
+//            }
+//        }).then((response) => {
+//            setRankInfo(response.data);
+//        }).catch((error) => {
+//            console.error("Fail to rankinfo : ", error);
+//        });
     }, [JWT]);
 
     useEffect(() => {
@@ -56,7 +66,8 @@ function MainPage({ JWT, userInfo, setUserInfo, setGameId, riddles, setRiddles }
                 <button className="open-modal-btn" onClick={openModal}>
                     Leave Feedback
                 </button>
-                {isModalOpen && <FeedbackModal JWT={JWT} closeModal={closeModal} />}            </div>
+                {isModalOpen && <FeedbackModal JWT={JWT} closeModal={closeModal} />}
+            </div>
             <div className="riddle-section">
                 <RiddleList JWT={JWT} userInfo={userInfo} setGameId={setGameId} riddles={riddles} />
             </div>

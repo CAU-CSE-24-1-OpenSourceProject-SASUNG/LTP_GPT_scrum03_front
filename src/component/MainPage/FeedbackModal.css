@@ -28,14 +28,13 @@
 }
 
 .close-btn {
-    padding: 16px;
-    background-color: #c52828;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
+    background-color: white;
     color: black;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
 }
 
