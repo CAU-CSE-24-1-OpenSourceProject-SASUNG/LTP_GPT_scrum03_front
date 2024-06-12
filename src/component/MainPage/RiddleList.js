@@ -12,9 +12,9 @@ function RiddleList({ JWT, setGameId, setNewGameId, riddles }) {
     return (
         <div className="riddle-list">
             <div className="riddle-header">
+                <h1>Riddles</h1>
                 <button className="add-riddle-button" onClick={handleAddRiddle}>+</button>
             </div>
-            <h2>Riddles</h2>
             <hr />
             <div className="riddle-container">
                 {riddles.map(riddle =>

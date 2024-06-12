@@ -7,7 +7,12 @@
     background-color: var(--main-lightgrey-color);
     box-shadow: 0 0 10px -5px black;
     border-radius: 10px;
-    position: relative; /* + 버튼을 절대 위치로 배치하기 위해 필요 */
+}
+
+.riddle-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .riddle-list h2 {
@@ -32,7 +37,6 @@ hr {
 
 /* + 버튼 스타일 */
 .add-riddle-button {
-    position: absolute;
     top: 20px;
     right: 20px;
     background-color: var(--main-button-color);
