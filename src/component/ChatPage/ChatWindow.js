@@ -30,7 +30,7 @@ const ChatWindow = ({ JWT, queries, clear }) => {
         <div className="chat-window">
             {queries.map((item, index) => (
                 <div className="message-group" key={index}>
-                    <div className="message user-message">{item.queryId} {item.query}</div>
+                    <div className="message user-message">{item.query}</div>
                     {item.response !== "" ? (
                         <div className="gpt-message-group">
                             <div className="message gpt-message">
