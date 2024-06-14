@@ -1,16 +1,16 @@
 import React, {useState} from 'react';
 import axios from "axios";
 
-const ResponseFeedbackModal = ({ JWT, closeModal }) => {
+const ResponseFeedbackModal = ({ JWT, closeModal, queryId }) => {
     const [feedback, setFeedback] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        axios.post(`${process.env.REACT_APP_API_URL}/feedback/new`, {
+        axios.patch(`${process.env.REACT_APP_API_URL}/feedback/update`, {
             headers: {
                 Authorization: `Bearer ${JWT}`
             },
+            queryId : queryId,
             content : feedback
         }).then(response => {
             alert('피드백이 정상적으로 제출되었습니다!');

@@ -34,7 +34,10 @@ const ChatWindow = ({ JWT, queries, clear }) => {
                                         <i className="fas fa-comment"></i>
                                     </button>
                                     {isModalOpen &&
-                                        <ResponseFeedbackModal JWT={JWT} closeModal={closeModal} />}
+                                        <ResponseFeedbackModal
+                                            JWT={JWT}
+                                            queryId={item.queryId}
+                                            closeModal={closeModal} />}
                                 </div>
                             }
                         </div>

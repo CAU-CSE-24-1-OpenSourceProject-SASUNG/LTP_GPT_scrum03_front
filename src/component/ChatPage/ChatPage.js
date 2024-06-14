@@ -32,17 +32,23 @@ function ChatPage({ JWT, gameId }) {
             }).catch((error) => {
                 console.error('Failed to fetch gameInfo:', error);
             });
-            axios.get(`${process.env.REACT_APP_API_URL}/game/progress`, { gameId: gameId },
-                {
+            axios.get(`${process.env.REACT_APP_API_URL}/game/progress`, {
+                    params:{
+                        gameId: gameId
+                    },
                     headers: {
                         'Authorization': `Bearer ${JWT}`
                     },
-                }
+                },
             ).then((response) => {
                 setGameInfo(prevGameInfo => ({
                     ...prevGameInfo,
                     progress: response.data.progress
                 }));
+                if (response.data.progress === 100)
+                {
+                    setClear(true)
+                }
             }).catch((error) => {
                 console.error('Failed to fetch game progress:', error);
             });
@@ -71,6 +77,26 @@ function ChatPage({ JWT, gameId }) {
                     }
                 }
             );
+            await axios.get(`${process.env.REACT_APP_API_URL}/game/progress`, {
+                    params:{
+                        gameId: gameId
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${JWT}`
+                    },
+                },
+            ).then((response) => {
+                setGameInfo(prevGameInfo => ({
+                    ...prevGameInfo,
+                    progress: response.data.progress
+                }));
+                if (response.data.progress === 100)
+                {
+                    setClear(true)
+                }
+            }).catch((error) => {
+                console.error('Failed to fetch game progress:', error);
+            });
             return response.data;
         } catch (error) {
             console.error('Failed to fetch recent items:', error);
@@ -104,7 +130,7 @@ function ChatPage({ JWT, gameId }) {
         } catch (error) {
             alert("서버 요청 중에 오류가 발생했습니다.");
         }
-        setCanSubmit((gameInfo.progress !== 0) && true);
+        setCanSubmit(true);
     };
 
     const handleKeyDown = (event) => {
@@ -120,7 +146,11 @@ function ChatPage({ JWT, gameId }) {
                 <ReactMarkdown>{gameInfo.problem}</ReactMarkdown>
             </div>
             <div className="chat-group">
-                <ChatWindow JWT={JWT} clear={clear} queries={queries} />
+                <ChatWindow
+                    JWT={JWT}
+                    clear={clear}
+                    queries={queries}
+                />
                 {!clear &&
                     <div className="input-group">
                     <textarea

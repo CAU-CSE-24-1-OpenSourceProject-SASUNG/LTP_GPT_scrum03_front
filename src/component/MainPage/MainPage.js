@@ -66,7 +66,12 @@ function MainPage({ JWT, userInfo, setUserInfo, setGameId, riddles, setRiddles }
                 <button className="open-modal-btn" onClick={openModal}>
                     Leave Feedback
                 </button>
-                {isModalOpen && <FeedbackModal JWT={JWT} closeModal={closeModal} />}
+                {isModalOpen &&
+                    <FeedbackModal
+                        JWT={JWT}
+                        closeModal={closeModal}
+                    />
+                }
             </div>
             <div className="riddle-section">
                 <RiddleList JWT={JWT} userInfo={userInfo} setGameId={setGameId} riddles={riddles} />
