@@ -1,5 +1,8 @@
 # TEST SERVER OPEN METHOD
-1. cd <FrontEnd Directory>
+1. goto FrontEnd directory
+```bash
+cd {FrontEnd Directory}
+```
 
 2. npm install
 ```bash
