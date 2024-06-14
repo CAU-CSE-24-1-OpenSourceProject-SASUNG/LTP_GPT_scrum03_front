@@ -5,24 +5,32 @@ import ResponseFeedbackModal from "./ResponseFeedbackModal";
 const ChatWindow = ({ JWT, queries, clear }) => {
     const chatEndRef = useRef(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedQueryId, setSelectedQueryId] = useState(null);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [queries]);
 
-    const openModal = () => {
+    const openModal = (queryId) => {
+        setSelectedQueryId(queryId);
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-    };
+        setSelectedQueryId(null);
+    }
+    useEffect(() => {
+        if (isModalOpen) {
+            console.log('Modal opened with queryId:', selectedQueryId);
+        }
+    }, [isModalOpen, selectedQueryId]);
 
     return (
         <div className="chat-window">
             {queries.map((item, index) => (
                 <div className="message-group" key={index}>
-                    <div className="message user-message">{item.query}</div>
+                    <div className="message user-message">{item.queryId} {item.query}</div>
                     {item.response !== "" ? (
                         <div className="gpt-message-group">
                             <div className="message gpt-message">
@@ -30,13 +38,13 @@ const ChatWindow = ({ JWT, queries, clear }) => {
                             </div>
                             {clear &&
                                 <div>
-                                    <button className="response-feedback" onClick={openModal}>
+                                    <button className="response-feedback" onClick={() => openModal(item.queryId)}>
                                         <i className="fas fa-comment"></i>
                                     </button>
                                     {isModalOpen &&
                                         <ResponseFeedbackModal
                                             JWT={JWT}
-                                            queryId={item.queryId}
+                                            queryId={selectedQueryId}
                                             closeModal={closeModal} />}
                                 </div>
                             }

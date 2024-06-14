@@ -7,12 +7,15 @@ const ResponseFeedbackModal = ({ JWT, closeModal, queryId }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.patch(`${process.env.REACT_APP_API_URL}/feedback/update`, {
-            headers: {
-                Authorization: `Bearer ${JWT}`
+                queryId : queryId,
+                content : feedback
             },
-            queryId : queryId,
-            content : feedback
-        }).then(response => {
+            {
+                headers: {
+                    Authorization: `Bearer ${JWT}`
+                },
+            }
+        ).then(response => {
             alert('피드백이 정상적으로 제출되었습니다!');
         }).catch(error => {
             console.error('Failed to fetch recent items:', error);
