@@ -26,6 +26,9 @@ function RiddleItem({ JWT, setGameId, riddle }) {
             <div className="riddle-text">
                 {riddle.riddleTitle}
             </div>
+            <div>
+                {riddle.hit_ratio}%
+            </div>
         </button>
     );
 }

@@ -6,7 +6,6 @@ const ChatWindow = ({ JWT, queries, clear }) => {
     const chatEndRef = useRef(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedQueryId, setSelectedQueryId] = useState(null);
-
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [queries]);
